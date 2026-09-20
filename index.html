@@ -715,39 +715,64 @@
 <script>
   let isDark = true;
 
-  function openPage(id, addHistory = true) {
-  document.querySelectorAll('.section-page').forEach(p => {
-    p.classList.remove('active');
-  });
+  // Create a starting history state for the main menu
+  if (!history.state || !history.state.menu) {
+    history.replaceState(
+      { menu: true },
+      '',
+      window.location.href.split('#')[0]
+    );
+  }
 
-  const page = document.getElementById('page-' + id);
+  function openPage(id) {
+    // Hide all category pages
+    document.querySelectorAll('.section-page').forEach(p => {
+      p.classList.remove('active');
+    });
 
-  if (page) {
-    page.classList.add('active');
-    window.scrollTo(0, 0);
+    // Show selected category
+    const page = document.getElementById('page-' + id);
 
-    // Add browser history entry
-    if (addHistory) {
-      history.pushState({ page: id }, '', '#page-' + id);
+    if (page) {
+      page.classList.add('active');
+
+      // Add category to browser history
+      history.pushState(
+        { menu: true, page: id },
+        '',
+        '#page-' + id
+      );
+
+      // Scroll category page to top
+      page.scrollTop = 0;
+      window.scrollTo(0, 0);
     }
   }
-}
 
-function closePage() {
-  // If a category page is open, go back in browser history
-  if (document.querySelector('.section-page.active')) {
-    history.back();
+  function closePage() {
+    // If category is open, go back to main menu
+    if (document.querySelector('.section-page.active')) {
+      history.back();
+    }
   }
-}
 
-// Mobile/browser back button
-window.addEventListener('popstate', function () {
-  document.querySelectorAll('.section-page').forEach(p => {
-    p.classList.remove('active');
+  // Handle mobile/browser BACK button
+  window.addEventListener('popstate', function(event) {
+
+    // Hide every category page
+    document.querySelectorAll('.section-page').forEach(p => {
+      p.classList.remove('active');
+    });
+
+    // Show main menu
+    const menuScreen = document.getElementById('menuScreen');
+
+    if (menuScreen) {
+      menuScreen.classList.add('show');
+    }
+
+    window.scrollTo(0, 0);
   });
-
-  window.scrollTo(0, 0);
-});
 </script>
 </body>
 </html>
