@@ -715,15 +715,39 @@
 <script>
   let isDark = true;
 
-  function openPage(id) {
-    document.querySelectorAll('.section-page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
-    window.scrollTo(0, 0);
-  }
+  function openPage(id, addHistory = true) {
+  document.querySelectorAll('.section-page').forEach(p => {
+    p.classList.remove('active');
+  });
 
-  function closePage() {
-    document.querySelectorAll('.section-page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+
+  if (page) {
+    page.classList.add('active');
+    window.scrollTo(0, 0);
+
+    // Add browser history entry
+    if (addHistory) {
+      history.pushState({ page: id }, '', '#page-' + id);
+    }
   }
+}
+
+function closePage() {
+  // If a category page is open, go back in browser history
+  if (document.querySelector('.section-page.active')) {
+    history.back();
+  }
+}
+
+// Mobile/browser back button
+window.addEventListener('popstate', function () {
+  document.querySelectorAll('.section-page').forEach(p => {
+    p.classList.remove('active');
+  });
+
+  window.scrollTo(0, 0);
+});
 </script>
 </body>
 </html>
